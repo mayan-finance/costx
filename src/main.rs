@@ -9,8 +9,8 @@ use axum::{
     Router,
 };
 use clap::Parser;
-use evm::{ChainConfig, EVMChainManager, TransactionAnalysis};
-use solana::{SolanaChainConfig, SolanaChainManager, SolanaTransactionAnalysis};
+use evm::{ChainConfig, EVMChainManager, TransactionAnalysis, EVMConfig};
+use solana::{SolanaChainConfig, SolanaChainManager, SolanaTransactionAnalysis, SolanaConfig};
 use serde::Deserialize;
 use std::sync::Arc;
 use tower_http::cors::CorsLayer;
@@ -22,37 +22,11 @@ struct Config {
     #[arg(short, long, env = "PORT", default_value = "3000")]
     port: u16,
 
-    /// Base RPC URL
-    #[arg(long, env = "BASE_RPC_URL", default_value = "https://mainnet.base.org")]
-    base_rpc_url: String,
+    #[command(flatten)]
+    evm: EVMConfig,
 
-    /// Arbitrum RPC URL
-    #[arg(long, env = "ARBITRUM_RPC_URL", default_value = "https://arb1.arbitrum.io/rpc")]
-    arbitrum_rpc_url: String,
-
-    /// Avalanche RPC URL
-    #[arg(long, env = "AVAX_RPC_URL", default_value = "https://api.avax.network/ext/bc/C/rpc")]
-    avalanche_rpc_url: String,
-
-    /// Polygon RPC URL
-    #[arg(long, env = "POLYGON_RPC_URL", default_value = "https://polygon-rpc.com")]
-    polygon_rpc_url: String,
-
-    /// Optimism RPC URL
-    #[arg(long, env = "OPTIMISM_RPC_URL", default_value = "https://optimism.drpc.org")]
-    optimism_rpc_url: String,
-
-    /// Unichain RPC URL
-    #[arg(long, env = "UNICHAIN_RPC_URL", default_value = "https://rpc.unichain.io")]
-    unichain_rpc_url: String,
-
-    /// Ethereum RPC URL
-    #[arg(long, env = "ETH_RPC_URL", default_value = "https://eth.llamarpc.com")]
-    eth_rpc_url: String,
-
-    /// Solana Mainnet RPC URL
-    #[arg(long, env = "SOLANA_RPC_URL", default_value = "https://api.mainnet-beta.solana.com")]
-    solana_mainnet_rpc_url: String,
+    #[command(flatten)]
+    solana: SolanaConfig,
 }
 
 #[derive(Deserialize)]
@@ -83,9 +57,9 @@ async fn main() {
     let config = Config::parse();
     
     // Initialize EVM chain manager with configuration
-    let evm_manager = Arc::new(EVMChainManager::new_with_config(&config));
+    let evm_manager = Arc::new(EVMChainManager::new(&config.evm));
     // Initialize Solana chain manager with configuration
-    let solana_manager = Arc::new(SolanaChainManager::new_with_config(&config));
+    let solana_manager = Arc::new(SolanaChainManager::new(&config.solana));
     let app_state = AppState { evm_manager, solana_manager };
 
     // Build our application with routes

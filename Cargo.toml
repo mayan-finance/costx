@@ -2,6 +2,23 @@
 name = "costx"
 version = "0.1.0"
 edition = "2021"
+description = "Blockchain transaction analysis tools for EVM chains and Solana"
+license = "MIT"
+repository = "https://github.com/mayan-finance/costx"
+keywords = ["blockchain", "ethereum", "solana", "transaction", "analysis"]
+categories = ["cryptography::cryptocurrencies", "api-bindings"]
+
+[lib]
+name = "costx"
+path = "src/lib.rs"
+
+[[bin]]
+name = "costx"
+path = "src/main.rs"
+
+[[example]]
+name = "usage"
+path = "examples/usage.rs"
 
 [dependencies]
 tokio = { version = "1.0", features = ["full"] }

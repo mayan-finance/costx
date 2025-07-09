@@ -4,6 +4,15 @@ use solana_client::rpc_client::RpcClient;
 use solana_sdk::pubkey::Pubkey;
 use solana_transaction_status::{EncodedConfirmedTransactionWithStatusMeta, UiTransactionEncoding};
 use std::{collections::HashMap, str::FromStr};
+use clap::Args;
+
+/// Configuration for Solana networks
+#[derive(Debug, Clone, Args)]
+pub struct SolanaConfig {
+    /// Solana Mainnet RPC URL
+    #[arg(long, env = "SOLANA_RPC_URL", default_value = "https://api.mainnet-beta.solana.com")]
+    pub solana_mainnet_rpc_url: String,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SolanaChainConfig {
@@ -50,7 +59,8 @@ pub struct SolanaChainManager {
 }
 
 impl SolanaChainManager {
-    pub fn new_with_config(config: &crate::Config) -> Self {
+    /// Create a new SolanaChainManager with the provided configuration
+    pub fn new(config: &SolanaConfig) -> Self {
         let mut chains = HashMap::new();
         
         // Mainnet configuration

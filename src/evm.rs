@@ -2,6 +2,39 @@ use ethers::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, str::FromStr, sync::Arc};
 use anyhow::Result;
+use clap::Args;
+
+/// Configuration for EVM chains
+#[derive(Debug, Clone, Args)]
+pub struct EVMConfig {
+    /// Base RPC URL
+    #[arg(long, env = "BASE_RPC_URL", default_value = "https://mainnet.base.org")]
+    pub base_rpc_url: String,
+
+    /// Arbitrum RPC URL
+    #[arg(long, env = "ARBITRUM_RPC_URL", default_value = "https://arb1.arbitrum.io/rpc")]
+    pub arbitrum_rpc_url: String,
+
+    /// Avalanche RPC URL
+    #[arg(long, env = "AVAX_RPC_URL", default_value = "https://api.avax.network/ext/bc/C/rpc")]
+    pub avalanche_rpc_url: String,
+
+    /// Polygon RPC URL
+    #[arg(long, env = "POLYGON_RPC_URL", default_value = "https://polygon-rpc.com")]
+    pub polygon_rpc_url: String,
+
+    /// Optimism RPC URL
+    #[arg(long, env = "OPTIMISM_RPC_URL", default_value = "https://optimism.drpc.org")]
+    pub optimism_rpc_url: String,
+
+    /// Unichain RPC URL
+    #[arg(long, env = "UNICHAIN_RPC_URL", default_value = "https://rpc.unichain.io")]
+    pub unichain_rpc_url: String,
+
+    /// Ethereum RPC URL
+    #[arg(long, env = "ETH_RPC_URL", default_value = "https://eth.llamarpc.com")]
+    pub eth_rpc_url: String,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChainConfig {
@@ -42,7 +75,8 @@ pub struct EVMChainManager {
 }
 
 impl EVMChainManager {
-    pub fn new_with_config(config: &crate::Config) -> Self {
+    /// Create a new EVMChainManager with the provided configuration
+    pub fn new(config: &EVMConfig) -> Self {
         let mut chains = HashMap::new();
         
         // Base chain configuration
@@ -73,7 +107,6 @@ impl EVMChainManager {
         });
         
         // Polygon chain configuration
-        
         chains.insert("polygon".to_string(), ChainConfig {
             name: "Polygon Mainnet".to_string(),
             chain_id: 137,
